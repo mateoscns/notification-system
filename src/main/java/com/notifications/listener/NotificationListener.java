@@ -17,10 +17,8 @@ public class NotificationListener {
                 event.userId());
         
         try {
-            // Simula latencia de envío a servidor SMTP
             Thread.sleep(1500);
             
-            // Aquí iría la integración real con SendGrid/SES
             log.info("📧 [EMAIL] ✓ Notification sent successfully [eventId={}, payload='{}']",
                     event.uuid(),
                     truncatePayload(event.payload()));
@@ -39,10 +37,8 @@ public class NotificationListener {
                 event.userId());
         
         try {
-            // Simula latencia de API de Twilio/SNS
             Thread.sleep(800);
             
-            // Aquí iría la integración real con Twilio o AWS SNS
             log.info("📱 [SMS] ✓ Notification sent successfully [eventId={}, payload='{}']",
                     event.uuid(),
                     truncatePayload(event.payload()));
@@ -61,10 +57,8 @@ public class NotificationListener {
                 event.userId());
         
         try {
-            // Simula latencia de Firebase Cloud Messaging
             Thread.sleep(500);
             
-            // Aquí iría la integración real con FCM/APNs
             log.info("🌐 [WEB] ✓ Notification sent successfully [eventId={}, payload='{}']",
                     event.uuid(),
                     truncatePayload(event.payload()));

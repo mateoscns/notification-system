@@ -17,15 +17,12 @@ public class NotificationService {
     private final RabbitTemplate rabbitTemplate;
 
     public NotificationEvent sendNotification(NotificationRequest request) {
-        
-        // Crea evento de dominio con UUID único y timestamp
         NotificationEvent event = NotificationEvent.create(
             request.userId(),
             request.message(),
             request.channel()
         );
         
-        // Obtiene la routing key según el canal
         String routingKey = request.channel().getRoutingKey();
         
         log.info("Publishing notification [eventId={}, channel={}, routingKey={}, userId={}]",
@@ -34,7 +31,6 @@ public class NotificationService {
                 routingKey,
                 request.userId());
         
-        // Publica en RabbitMQ al exchange especificado
         rabbitTemplate.convertAndSend(
             RabbitMqConfig.EXCHANGE_NAME,
             routingKey,
@@ -47,8 +43,6 @@ public class NotificationService {
     }
     
     public NotificationEvent broadcastNotification(String userId, String message) {
-        
-        // Crea evento con canal ALL para ser enrutado a todas las colas
         NotificationEvent event = NotificationEvent.create(
             userId,
             message,
@@ -59,7 +53,6 @@ public class NotificationService {
                 event.uuid(), 
                 userId);
         
-        // Publica con routing key especial que llega a los 3 canales
         rabbitTemplate.convertAndSend(
             RabbitMqConfig.EXCHANGE_NAME,
             RabbitMqConfig.BROADCAST_ROUTING_KEY,

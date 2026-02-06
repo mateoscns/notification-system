@@ -31,13 +31,10 @@ public class NotificationController {
     @PostMapping
     public ResponseEntity<NotificationResponse> sendNotification(
             @Valid @RequestBody NotificationRequest request) {
-        
-        // Registra la solicitud recibida
         log.info("Received notification request [userId={}, channel={}]",
                 request.userId(), 
                 request.channel());
         
-        // Convierte DTO a evento de dominio y publica en RabbitMQ
         NotificationEvent event = notificationService.sendNotification(request);
         
         NotificationResponse response = request.channel() == NotificationChannel.ALL
@@ -57,11 +54,8 @@ public class NotificationController {
     public ResponseEntity<NotificationResponse> broadcastNotification(
             @RequestParam String userId,
             @RequestParam String message) {
-        
-        // Registra solicitud de broadcast
         log.info("Received broadcast request [userId={}]", userId);
         
-        // Publica a todos los canales en paralelo
         NotificationEvent event = notificationService.broadcastNotification(userId, message);
         
         NotificationResponse response = NotificationResponse.broadcast(event.uuid());
@@ -76,7 +70,6 @@ public class NotificationController {
     @Operation(summary = "Health Check", description = "Verifica el estado del servicio")
     @GetMapping("/health")
     public ResponseEntity<Map<String, Object>> healthCheck() {
-        // Retorna estado UP con los 3 canales disponibles
         return ResponseEntity.ok(Map.of(
             "status", "UP",
             "service", "notification-system",

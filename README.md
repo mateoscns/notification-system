@@ -1,8 +1,22 @@
-# Sistema de Notificaciones Multicanal con RabbitMQ
+# 📬 Notification System - Event-Driven Architecture
 
-Sistema escalable de notificaciones asíncronas usando Spring Boot 3 y RabbitMQ con arquitectura basada en eventos.
+![Java](https://img.shields.io/badge/Java-17-orange?style=flat-square&logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.2-6DB33F?style=flat-square&logo=springboot)
+![RabbitMQ](https://img.shields.io/badge/RabbitMQ-CloudAMQP-FF6600?style=flat-square&logo=rabbitmq)
 
-## Arquitectura
+Sistema escalable de notificaciones multicanal implementando **arquitectura basada en eventos** con Spring Boot 3 y RabbitMQ. Diseñado para demostrar patrones de mensajería asíncrona, desacoplamiento de servicios y procesamiento distribuido.
+
+## ✨ Features
+
+- **Mensajería Asíncrona** - Procesamiento no bloqueante con RabbitMQ
+- **Multicanal** - Soporte para Email, SMS y Web Push notifications
+- **Broadcast** - Envío simultáneo a todos los canales con Topic Exchange
+- **Bulk Processing** - Envío masivo a múltiples usuarios
+- **Alta Disponibilidad** - Configuración de consumers concurrentes (3-10)
+- **Retry Policy** - Reintentos automáticos con backoff exponencial
+- **SSL/TLS** - Conexión segura a broker en la nube
+
+## 🏗️ Arquitectura
 
 ```
 ┌─────────────────┐      ┌──────────────────────────────────────────┐
@@ -31,22 +45,27 @@ Sistema escalable de notificaciones asíncronas usando Spring Boot 3 y RabbitMQ 
                          └─────────────────────────────────────────┘
 ```
 
-## Tecnologías
+## 🛠️ Tech Stack
 
-- Java 17
-- Spring Boot 3.2.2
-- Spring AMQP (RabbitMQ)
-- CloudAMQP (AWS)
-- Lombok
-- Jackson (JSON)
+| Categoría | Tecnología |
+|-----------|------------|
+| Language | Java 17 |
+| Framework | Spring Boot 3.2.2 |
+| Messaging | Spring AMQP + RabbitMQ |
+| Cloud Broker | CloudAMQP (AWS) |
+| Serialization | Jackson (JSON) |
+| Utilities | Lombok |
+| Documentation | SpringDoc OpenAPI (Swagger) |
+| Testing | JUnit 5 + Mockito |
 
-## Estructura del Proyecto
+## 📁 Estructura del Proyecto
 
 ```
 src/main/java/com/notifications/
 ├── config/
 │   ├── RabbitMqConfig.java      # Exchange, Queues, Bindings
-│   └── JacksonConfig.java       # JSON serialization
+│   ├── JacksonConfig.java       # JSON serialization
+│   └── SwaggerConfig.java       # API documentation
 ├── controller/
 │   ├── NotificationController.java
 │   ├── BulkNotificationController.java
@@ -67,9 +86,36 @@ src/main/java/com/notifications/
     └── BulkNotificationResponse.java
 ```
 
-## Configuración CloudAMQP
+## 🚀 Quick Start
 
-La aplicación está configurada para conectarse a CloudAMQP (AWS):
+### Prerrequisitos
+
+- Java 17+
+- Maven 3.8+
+
+### Ejecutar
+
+```bash
+# Clonar repositorio
+git clone https://github.com/tu-usuario/notification-system.git
+cd notification-system
+
+# Ejecutar aplicación
+mvn spring-boot:run
+```
+
+La aplicación estará disponible en `http://localhost:8080`
+
+### Swagger UI
+
+Documentación interactiva disponible en:
+```
+http://localhost:8080/swagger-ui.html
+```
+
+## ⚙️ Configuración CloudAMQP
+
+La aplicación está preconfigurada para conectarse a un broker CloudAMQP (AWS):
 
 ```properties
 spring.rabbitmq.host=chimpanzee.rmq.cloudamqp.com
@@ -81,19 +127,13 @@ spring.rabbitmq.ssl.enabled=true
 
 **RabbitMQ Manager:** https://chimpanzee.rmq.cloudamqp.com
 
-## Ejecutar
+> ⚠️ **Nota:** Las credenciales están visibles intencionalmente para facilitar la demostración y revisión del proyecto. En un entorno de producción, estas se gestionarían mediante variables de entorno o servicios de secrets management (AWS Secrets Manager, HashiCorp Vault, etc.).
 
-```bash
-mvn spring-boot:run
-```
-
-O ejecutar `NotificationSystemApplication.java` desde el IDE.
-
-## API Endpoints
+## 📡 API Endpoints
 
 ### Enviar Notificación Individual
 
-```
+```http
 POST /api/v1/notifications
 Content-Type: application/json
 
@@ -108,13 +148,13 @@ Content-Type: application/json
 
 ### Broadcast a Todos los Canales
 
-```
+```http
 POST /api/v1/notifications/broadcast?userId=user123&message=Mensaje importante
 ```
 
 ### Envío Masivo (Bulk)
 
-```
+```http
 POST /api/v1/notifications/bulk
 Content-Type: application/json
 
@@ -127,55 +167,92 @@ Content-Type: application/json
 
 ### Health Check
 
-```
+```http
 GET /api/v1/notifications/health
 ```
 
-## Routing Keys
+## 🔀 Message Routing
 
 | Canal | Routing Key | Cola Destino |
 |-------|-------------|--------------|
-| EMAIL | notify.email | notifications.email.queue |
-| SMS | notify.sms | notifications.sms.queue |
-| WEB | notify.web | notifications.web.queue |
-| ALL | notify.all | Todas las colas (broadcast) |
+| EMAIL | `notify.email` | notifications.email.queue |
+| SMS | `notify.sms` | notifications.sms.queue |
+| WEB | `notify.web` | notifications.web.queue |
+| ALL | `notify.all` | Todas las colas (broadcast) |
 
-## Demo - Comandos cURL (Windows PowerShell)
+## 🧪 Testing
+
+El proyecto incluye tests unitarios con JUnit 5 y Mockito:
+
+```bash
+# Ejecutar todos los tests
+mvn test
+
+# Ejecutar tests con reporte de cobertura
+mvn test jacoco:report
+```
+
+### Tests Incluidos
+
+| Clase | Cobertura |
+|-------|-----------|
+| `NotificationControllerTest` | Controllers + validaciones |
+| `NotificationServiceTest` | Lógica de negocio + routing |
+| `NotificationEventTest` | Domain events |
+| `NotificationChannelTest` | Enum routing keys |
+
+## 💡 Demo - Comandos cURL
 
 ```powershell
 # 📧 EMAIL
-curl -X POST http://localhost:8080/api/v1/notifications -H "Content-Type: application/json" -d "{\"userId\":\"user-001\",\"message\":\"Bienvenido a nuestro servicio\",\"channel\":\"EMAIL\"}"
+curl -X POST http://localhost:8080/api/v1/notifications `
+  -H "Content-Type: application/json" `
+  -d '{"userId":"user-001","message":"Bienvenido a nuestro servicio","channel":"EMAIL"}'
 
 # 📱 SMS
-curl -X POST http://localhost:8080/api/v1/notifications -H "Content-Type: application/json" -d "{\"userId\":\"user-001\",\"message\":\"Tu codigo es 123456\",\"channel\":\"SMS\"}"
+curl -X POST http://localhost:8080/api/v1/notifications `
+  -H "Content-Type: application/json" `
+  -d '{"userId":"user-001","message":"Tu codigo es 123456","channel":"SMS"}'
 
 # 🌐 WEB PUSH
-curl -X POST http://localhost:8080/api/v1/notifications -H "Content-Type: application/json" -d "{\"userId\":\"user-001\",\"message\":\"Nueva promocion disponible\",\"channel\":\"WEB\"}"
+curl -X POST http://localhost:8080/api/v1/notifications `
+  -H "Content-Type: application/json" `
+  -d '{"userId":"user-001","message":"Nueva promocion disponible","channel":"WEB"}'
 
 # 📢 BROADCAST (todos los canales)
-curl -X POST http://localhost:8080/api/v1/notifications -H "Content-Type: application/json" -d "{\"userId\":\"user-001\",\"message\":\"Alerta importante\",\"channel\":\"ALL\"}"
+curl -X POST http://localhost:8080/api/v1/notifications `
+  -H "Content-Type: application/json" `
+  -d '{"userId":"user-001","message":"Alerta importante","channel":"ALL"}'
 
 # 📦 BULK (envío masivo)
-curl -X POST http://localhost:8080/api/v1/notifications/bulk -H "Content-Type: application/json" -d "{\"userIds\":[\"user-001\",\"user-002\",\"user-003\"],\"message\":\"Promocion especial\",\"channels\":[\"EMAIL\",\"SMS\"]}"
-
-# ❤️ HEALTH CHECK
-curl http://localhost:8080/api/v1/notifications/health
+curl -X POST http://localhost:8080/api/v1/notifications/bulk `
+  -H "Content-Type: application/json" `
+  -d '{"userIds":["user-001","user-002","user-003"],"message":"Promocion especial","channels":["EMAIL","SMS"]}'
 ```
 
-## Características de Escalabilidad
+## 📈 Configuración de Escalabilidad
 
-- **Concurrencia configurable:** 3-10 consumers por cola
-- **Prefetch:** 10 mensajes por consumer
-- **Retry automático:** 3 intentos con backoff exponencial
-- **SSL/TLS:** Conexión segura a CloudAMQP
-- **Topic Exchange:** Enrutamiento flexible con routing keys
+| Parámetro | Valor | Descripción |
+|-----------|-------|-------------|
+| `concurrency` | 3 | Consumers iniciales por cola |
+| `max-concurrency` | 10 | Máximo de consumers bajo carga |
+| `prefetch` | 10 | Mensajes pre-cargados por consumer |
+| `retry.max-attempts` | 3 | Reintentos antes de DLQ |
+| `retry.multiplier` | 2.0 | Backoff exponencial |
 
-## Tiempos de Procesamiento Simulados
+### Latencia Simulada por Canal
 
-| Canal | Latencia Simulada |
-|-------|-------------------|
-| EMAIL | 1500ms |
-| SMS | 800ms |
-| WEB | 500ms |
+| Canal | Latencia | Simula |
+|-------|----------|--------|
+| EMAIL | 1500ms | SMTP / SendGrid / SES |
+| SMS | 800ms | Twilio / AWS SNS |
+| WEB | 500ms | Firebase Cloud Messaging |
 
-Esto permite demostrar el procesamiento asíncrono y paralelo de los 3 canales.
+## 🗺️ Roadmap
+
+- [ ] Dead Letter Queue (DLQ) para mensajes fallidos
+- [ ] Integración real con SendGrid/Twilio
+- [ ] Métricas con Micrometer + Prometheus
+- [ ] Dashboard con Grafana
+- [ ] Containerización con Docker
+- [ ] CI/CD con GitHub Actions

@@ -21,8 +21,6 @@ public class BulkNotificationService {
     private final RabbitTemplate rabbitTemplate;
 
     public List<NotificationEvent> sendBulkNotifications(BulkNotificationRequest request) {
-        
-        // Genera ID de lote para tracking
         UUID batchId = UUID.randomUUID();
         List<NotificationEvent> events = new ArrayList<>();
         
@@ -31,7 +29,6 @@ public class BulkNotificationService {
                 request.userIds().size(),
                 request.channels().size());
         
-        // Itera usuarios x canales para crear y publicar eventos
         for (String userId : request.userIds()) {
             for (NotificationChannel channel : request.channels()) {
                 NotificationEvent event = NotificationEvent.create(
@@ -40,7 +37,6 @@ public class BulkNotificationService {
                     channel
                 );
                 
-                // Publica cada evento al canal correspondiente
                 rabbitTemplate.convertAndSend(
                     RabbitMqConfig.EXCHANGE_NAME,
                     channel.getRoutingKey(),

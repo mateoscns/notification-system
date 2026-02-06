@@ -31,16 +31,11 @@ public class BulkNotificationController {
     @PostMapping
     public ResponseEntity<BulkNotificationResponse> sendBulkNotification(
             @Valid @RequestBody BulkNotificationRequest request) {
-        
-        // Registra solicitud masiva recibida
         log.info("Received bulk notification request [users={}, channels={}]",
                 request.userIds().size(),
                 request.channels().size());
         
-        // Procesa envío a múltiples usuarios y canales
         List<NotificationEvent> events = bulkNotificationService.sendBulkNotifications(request);
-        
-        // Calcula total de notificaciones publicadas
         
         List<String> channels = request.channels().stream()
                 .map(Enum::name)

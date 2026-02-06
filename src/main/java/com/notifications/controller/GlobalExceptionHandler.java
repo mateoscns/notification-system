@@ -19,8 +19,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(
             MethodArgumentNotValidException ex) {
-        
-        // Extrae errores de validación de campos individuales
         Map<String, String> fieldErrors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -31,8 +29,6 @@ public class GlobalExceptionHandler {
                 ));
         
         log.warn("Validation failed: {}", fieldErrors);
-        
-        // Construye respuesta de error 400 con detalles específicos
         
         Map<String, Object> response = new HashMap<>();
         response.put("status", HttpStatus.BAD_REQUEST.value());
@@ -47,8 +43,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
-        
-        // Captura cualquier excepción no manejada y retorna 500
         log.error("Unexpected error processing request", ex);
         
         Map<String, Object> response = new HashMap<>();

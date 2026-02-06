@@ -24,7 +24,6 @@ public class RabbitMqConfig {
 
     @Bean
     public TopicExchange notificationsExchange() {
-        // Crea exchange de tipo Topic para enrutamiento flexible con patrones
         return ExchangeBuilder
                 .topicExchange(EXCHANGE_NAME)
                 .durable(true)
@@ -33,7 +32,6 @@ public class RabbitMqConfig {
 
     @Bean
     public Queue emailQueue() {
-        // Cola durable para notificaciones de Email
         return QueueBuilder
                 .durable(EMAIL_QUEUE)
                 .build();
@@ -55,7 +53,6 @@ public class RabbitMqConfig {
 
     @Bean
     public Binding emailBinding(Queue emailQueue, TopicExchange notificationsExchange) {
-        // Conecta cola de email al exchange con routing key específica
         return BindingBuilder
                 .bind(emailQueue)
                 .to(notificationsExchange)
@@ -104,14 +101,12 @@ public class RabbitMqConfig {
 
     @Bean
     public MessageConverter jsonMessageConverter() {
-        // Convierte mensajes a/desde JSON automáticamente
         return new Jackson2JsonMessageConverter();
     }
 
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, 
                                          MessageConverter jsonMessageConverter) {
-        // Configura template para publicar mensajes al broker
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
         template.setMessageConverter(jsonMessageConverter);
         template.setExchange(EXCHANGE_NAME);

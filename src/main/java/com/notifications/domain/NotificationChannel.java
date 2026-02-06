@@ -2,7 +2,6 @@ package com.notifications.domain;
 
 public enum NotificationChannel {
     
-    // Define los 3 canales disponibles + opción ALL para broadcast
     EMAIL("notify.email"),
     SMS("notify.sms"),
     WEB("notify.web"),
