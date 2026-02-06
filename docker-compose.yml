@@ -1,0 +1,48 @@
+version: '3.8'
+
+# 
+# Docker Compose - Solo para entorno local de desarrollo
+# 
+# NOTA: Actualmente se usa CloudAMQP (AWS) como broker.
+#       Este archivo queda como referencia para levantar
+#       RabbitMQ localmente si se dispone de espacio en disco.
+#
+# Uso: docker-compose up -d
+# Management UI: http://localhost:15672 (guest/guest)
+# 
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: notification-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  notification-app:
+    build: .
+    container_name: notification-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      SPRING_RABBITMQ_SSL_ENABLED: "false"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+volumes:
+  rabbitmq_data:
