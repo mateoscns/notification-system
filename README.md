@@ -247,12 +247,3 @@ curl -X POST http://localhost:8080/api/v1/notifications/bulk `
 | EMAIL | 1500ms | SMTP / SendGrid / SES |
 | SMS | 800ms | Twilio / AWS SNS |
 | WEB | 500ms | Firebase Cloud Messaging |
-
-## 🗺️ Roadmap
-
-- [ ] Dead Letter Queue (DLQ) para mensajes fallidos
-- [ ] Integración real con SendGrid/Twilio
-- [ ] Métricas con Micrometer + Prometheus
-- [ ] Dashboard con Grafana
-- [ ] Containerización con Docker
-- [ ] CI/CD con GitHub Actions
