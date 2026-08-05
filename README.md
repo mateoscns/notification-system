@@ -115,19 +115,18 @@ http://localhost:8080/swagger-ui.html
 
 ## ⚙️ Configuración CloudAMQP
 
-La aplicación está preconfigurada para conectarse a un broker CloudAMQP (AWS):
+La aplicación se conecta a un broker CloudAMQP mediante variables de entorno (ver `.env.example`) — no se versionan credenciales reales en este repositorio:
 
 ```properties
-spring.rabbitmq.host=chimpanzee.rmq.cloudamqp.com
-spring.rabbitmq.port=5671
-spring.rabbitmq.username=slvokyqa
-spring.rabbitmq.virtual-host=slvokyqa
+spring.rabbitmq.host=${RABBITMQ_HOST}
+spring.rabbitmq.port=${RABBITMQ_PORT:5671}
+spring.rabbitmq.username=${RABBITMQ_USERNAME}
+spring.rabbitmq.password=${RABBITMQ_PASSWORD}
+spring.rabbitmq.virtual-host=${RABBITMQ_VHOST}
 spring.rabbitmq.ssl.enabled=true
 ```
 
-**RabbitMQ Manager:** https://chimpanzee.rmq.cloudamqp.com
-
-> ⚠️ **Nota:** Las credenciales están visibles intencionalmente para facilitar la demostración y revisión del proyecto. En un entorno de producción, estas se gestionarían mediante variables de entorno o servicios de secrets management (AWS Secrets Manager, HashiCorp Vault, etc.).
+Configurá estas variables en tu entorno local (`.env`) o en tu gestor de secretos (AWS Secrets Manager, HashiCorp Vault, etc.) antes de levantar la app.
 
 ## 📡 API Endpoints
 
